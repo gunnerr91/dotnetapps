@@ -29,15 +29,7 @@ namespace CQRSDemo
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(ApplicationContext).Assembly.FullName)));
-            services.AddSwaggerGen(c =>
-            {
-                //c.IncludeXmlComments(string.Format(@"{0}\CQRSDemo.xml", System.AppDomain.CurrentDomain.BaseDirectory));
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "CQRSDemo",
-                });
-            });
+            services.AddSwaggerDocument();
             services.AddControllers();
         }
 
@@ -49,11 +41,9 @@ namespace CQRSDemo
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CQRSDemo");
-            });
+            // Register the Swagger generator and the Swagger UI middlewares
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseHttpsRedirection();
 
