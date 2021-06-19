@@ -1,51 +1,63 @@
+import { HttpTestingController } from "@angular/common/http/testing";
+import { FetchDataComponent } from "./fetch-data.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FetchDataComponent, WeatherForecast } from "./fetch-data.component";
+import { DebugElement } from "@angular/core";
 import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from "@angular/common/http/testing";
-import { Type } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+  WeatherForecast,
+  WeatherForecastService,
+} from "./weather-forecast.service";
+import { of } from "rxjs";
 
-// describe("fetch data component", () => {
-//   let fixture: ComponentFixture<FetchDataComponent>;
-//   let app: FetchDataComponent;
-//   let httpMock: HttpTestingController;
+fdescribe("fetch data component", () => {
+  let fetchDataComponent: FetchDataComponent;
+  let fixture: ComponentFixture<FetchDataComponent>;
+  let de: DebugElement;
 
-//   beforeEach(async () => {
-//     TestBed.configureTestingModule({
-//       imports: [HttpClientTestingModule],
-//       declarations: [FetchDataComponent],
-//     });
+  let serviceStub: any;
+  let service: WeatherForecastService;
+  let spy: jasmine.Spy;
 
-//     await TestBed.compileComponents();
+  const dummyForecasts: WeatherForecast[] = [
+    {
+      date: "12/12/12",
+      temperatureC: 15,
+      temperatureF: 15,
+      summary: "summay",
+    },
+    {
+      date: "12/12/12",
+      temperatureC: 15,
+      temperatureF: 15,
+      summary: "summay",
+    },
+  ];
 
-//     fixture = TestBed.createComponent(FetchDataComponent);
-//     app = fixture.componentInstance;
-//     httpMock = fixture.debugElement.injector.get<HttpTestingController>(HttpTestingController as Type<HttpTestingController>);
-
-//     fixture.detectChanges();
-//   });
-
-//   afterEach(() => {
-//     httpMock.verify();
-//   });
-
-//   it('testing http client request', () => {
-//     const dummyResponse = [{dummy: "response"}];
-//     const req = httpMock.expectOne()
-//   });
-// });
-
-describe("testing isolated component", () => {
-  let component: FetchDataComponent;
-  let client: HttpClient;
-  beforeEach(() => {
-    client = jasmine.createSpyObj("HttpClient", ["get"]);
-    component = new FetchDataComponent(client, "someurl");
+  beforeEach(async () => {
+    serviceStub = {
+      getForecasts: () => of(dummyForecasts),
+    };
+    await TestBed.configureTestingModule({
+      declarations: [FetchDataComponent],
+      providers: [{ provide: WeatherForecastService, useValue: serviceStub }],
+    }).compileComponents();
   });
 
-  it("should return expected response", () => {
-    // client.get = () : WeatherForecast[] => [{date: "asd", summary: "asd", temperatureC: 12, temperatureF: 15}]
+  beforeEach(() => {
+    fixture = TestBed.createComponent(FetchDataComponent);
+    fetchDataComponent = fixture.componentInstance;
+    de = fixture.debugElement;
+    service = de.injector.get(WeatherForecastService);
+
+    spy = spyOn(service, "getForecasts").and.returnValue(of(dummyForecasts));
+    fixture.detectChanges();
+  });
+
+  it("returns truthy for forecast property", () => {
+    expect(fetchDataComponent.forecasts).toBeTruthy();
+  });
+
+  it("populates property value on init", () => {
+    fetchDataComponent.ngOnInit();
+    expect(fetchDataComponent.forecasts).toBe(dummyForecasts);
   });
 });
