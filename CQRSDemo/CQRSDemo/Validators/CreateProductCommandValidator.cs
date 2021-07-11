@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace CQRSDemo.Validators
 {
-    public class CreateProductCommndValidator : AbstractValidator<CreateProductCommand>
+    public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
     {
-        public CreateProductCommndValidator()
+        public CreateProductCommandValidator()
         {
             RuleFor(c => c.Barcode).NotEmpty();
             RuleFor(c => c.Name).NotEmpty();
